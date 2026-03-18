@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Definian Data Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#0D2C71;--green:#00AB63;--midnight:#02072D;
+  --bg:#0a0e1a;--panel:#0f1525;--card:#0f1525;--raised:#151c2e;--elevated:#1a2238;
+  --t1:#e8eaf0;--t2:#9aa3b8;--t3:#6b7280;--border:#2a3654;--border2:#3d4a6a;
+  --red:#FF6B6B;--yellow:#FFD166;
+}
+body{font-family:'Roboto',sans-serif;background:var(--bg);color:var(--t1);font-size:13px;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+#app{display:flex;flex:1;overflow:hidden}
+#sidebar{width:210px;min-width:210px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+#main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.topbar{background:var(--blue);border-bottom:3px solid var(--green);padding:10px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.logo{font-family:'Titillium Web',sans-serif;font-weight:700;font-size:22px;color:#fff;letter-spacing:-0.5px}
+.logo span{color:var(--green)}
+.topbar-sub{color:rgba(255,255,255,0.7);font-size:12px;border-left:1px solid rgba(255,255,255,0.2);padding-left:12px;margin-left:4px;font-family:'Titillium Web',sans-serif}
+.topbar-user{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.8)}
+.role-badge{background:var(--green);color:var(--midnight);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;font-family:'Titillium Web',sans-serif}
+.sb-section{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;padding:14px 14px 4px}
+.nav-btn{display:block;width:100%;text-align:left;background:none;border:none;color:var(--t2);font-family:'Roboto',sans-serif;font-size:13px;padding:8px 14px;cursor:pointer}
+.nav-btn:hover{background:var(--raised);color:var(--t1)}
+.nav-btn.active{background:var(--raised);color:var(--green);border-left:3px solid var(--green);padding-left:11px}
+.sb-divider{border:none;border-top:1px solid var(--border);margin:10px 14px}
+.sb-user{padding:12px 14px;font-size:12px;color:var(--t2)}
+.sb-user strong{display:block;color:var(--t1);font-weight:500;margin-bottom:2px}
+.sb-user .sb-role{color:var(--green);font-size:11px;margin-top:2px}
+.ui-toggle{display:flex;margin:12px 14px 4px;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.ui-btn{flex:1;padding:7px 4px;font-family:'Titillium Web',sans-serif;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;border:none;cursor:pointer;text-align:center}
+.ui-btn.active{background:var(--green);color:var(--midnight)}
+.ui-btn.inactive{background:var(--raised);color:var(--t2)}
+.page{padding:20px 24px;flex:1}
+.brand-bar{background:var(--blue);border-bottom:3px solid var(--green);padding:10px 18px;border-radius:6px;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.brand-title{font-family:'Titillium Web',sans-serif;font-weight:600;font-size:18px;color:#fff}
+.dots{display:flex;gap:10px;margin-bottom:12px;opacity:0.3}
+.dot{width:6px;height:6px;background:var(--green);border-radius:1px}
+.section-title{font-family:'Titillium Web',sans-serif;font-size:10px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:1.5px;border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:12px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px 18px}
+.kpi-label{font-family:'Titillium Web',sans-serif;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--t2);margin-bottom:6px}
+.kpi-value{font-family:'Titillium Web',sans-serif;font-size:32px;font-weight:700;line-height:1}
+.kpi-delta{font-size:11px;color:var(--t3);margin-top:4px}
+.kpi-alert .kpi-value{color:var(--red)}
+.kpi-warn .kpi-value{color:var(--yellow)}
+.kpi-ok .kpi-value{color:var(--green)}
+.two-col{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.chart-wrap{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:16px}
+.activity-item{padding:8px 10px;background:var(--raised);border-radius:4px;margin-bottom:6px;border-left:3px solid var(--green)}
+.activity-meta{font-size:11px;color:var(--t2);margin-bottom:2px}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;font-family:'Titillium Web',sans-serif;text-transform:uppercase}
+.b-open{background:rgba(255,107,107,0.15);color:var(--red);border:1px solid rgba(255,107,107,0.4)}
+.b-warn{background:rgba(255,209,102,0.15);color:var(--yellow);border:1px solid rgba(255,209,102,0.4)}
+.b-ok{background:rgba(0,171,99,0.15);color:var(--green);border:1px solid rgba(0,171,99,0.4)}
+.b-info{background:rgba(3,143,186,0.15);color:#038FBA;border:1px solid rgba(3,143,186,0.4)}
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{background:var(--raised);color:var(--t1);font-family:'Titillium Web',sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:8px 10px;border-bottom:2px solid var(--border);text-align:left;font-weight:600}
+.data-table td{padding:7px 10px;border-bottom:1px solid var(--border);color:var(--t1);vertical-align:middle}
+.data-table tr:hover td{background:var(--raised)}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:auto;margin-bottom:16px}
+.job-row{background:var(--raised);border-radius:8px;padding:12px 16px;margin-bottom:8px;border-left:4px solid var(--green);display:flex;align-items:center;gap:12px}
+.job-row.running{border-left-color:#038FBA}
+.job-row.failed{border-left-color:var(--red)}
+.job-row.queued{border-left-color:var(--yellow)}
+.job-name{font-family:'Titillium Web',sans-serif;font-weight:600;font-size:13px;color:var(--t1)}
+.job-meta{font-size:11px;color:var(--t2);margin-top:2px}
+.progress-bar{height:4px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden}
+.progress-fill{height:100%;background:var(--green);border-radius:2px}
+.progress-fill.run{background:#038FBA}
+.progress-fill.fail{background:var(--red)}
+.progress-fill.q{background:var(--yellow)}
+.app-card{background:var(--raised);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:border-color 0.15s}
+.app-card:hover{border-color:var(--green)}
+.app-card-name{font-family:'Titillium Web',sans-serif;font-weight:600;font-size:13px;color:var(--t1)}
+.app-card-desc{font-size:11px;color:var(--t2);margin-top:2px}
+.btn{background:var(--green);color:var(--midnight);border:none;border-radius:6px;padding:7px 16px;font-family:'Titillium Web',sans-serif;font-weight:600;font-size:13px;cursor:pointer}
+.btn:hover{background:#009955;color:#fff}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn-outline{background:none;border:1px solid var(--border2);color:var(--t2);border-radius:6px;padding:7px 16px;font-family:'Titillium Web',sans-serif;font-weight:600;font-size:13px;cursor:pointer}
+.btn-outline:hover{border-color:var(--green);color:var(--green)}
+.select{background:var(--raised);color:var(--t1);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;font-family:'Roboto',sans-serif}
+.input{background:var(--raised);color:var(--t1);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;font-family:'Roboto',sans-serif;width:100%}
+.input:focus,.select:focus{outline:none;border-color:var(--green)}
+.filters{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.login-wrap{display:flex;align-items:center;justify-content:center;height:100vh;background:var(--bg)}
+.login-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:40px 44px;width:420px;box-shadow:0 4px 24px rgba(0,0,0,0.3)}
+.login-logo{font-family:'Titillium Web',sans-serif;font-weight:700;font-size:36px;color:#fff;margin-bottom:4px}
+.login-logo span{color:var(--green)}
+.login-sub{color:var(--t2);font-size:13px;margin-bottom:28px}
+.form-label{font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;font-family:'Titillium Web',sans-serif;font-weight:600}
+.form-group{margin-bottom:16px}
+.error-msg{color:var(--red);font-size:12px;margin-top:8px}
+.task-item{padding:8px 10px;background:var(--raised);border-radius:4px;margin-bottom:6px;border-left:3px solid var(--blue)}
+.log-modal{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000}
+.log-box{background:var(--panel);border:1px solid var(--border2);border-radius:10px;padding:24px;width:520px;max-height:400px;overflow-y:auto}
+.log-line{font-family:'Roboto Mono',monospace;font-size:12px;color:var(--t2);padding:3px 0;border-bottom:1px solid var(--border)}
+.log-line.err{color:var(--red)}
+.log-line.ok{color:var(--green)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const USERS={
+  "admin@definian.com":{password:"admin123",role:"Administrator",name:"Alex Admin"},
+  "consultant@definian.com":{password:"consult1",role:"Editor (Consultant)",name:"Chris Consultant"},
+  "client@acme.com":{password:"client123",role:"Editor (Client)",name:"Casey Client"},
+  "viewer@acme.com":{password:"viewer123",role:"Viewer",name:"Val Viewer"}
+};
+
+let state={auth:false,user:null,page:"Home",ui:"Client Portal",errorFilter:"All",mapFilter:"All",errSearch:"",logModal:null};
+
+function seededRand(seed){let s=seed;return()=>{s=(s*9301+49297)%233280;return s/233280}}
+const sr=seededRand(42),sr2=seededRand(77),sr3=seededRand(99),sr4=seededRand(55);
+
+const ERROR_DATA=(()=>{
+  const statuses=["Open","In Progress","Resolved","Pending Review"];
+  const types=["Missing Cross-Reference","Invalid Format","Duplicate Key","Null Required Field","Out of Range Value","Orphaned Record"];
+  const assignees=["Casey Client","Chris Consultant","Alex Admin","Unassigned"];
+  const sources=["Customer","Item","Vendor","GL Account"];
+  const fields=["CostCenter","EmployeeID","GLCode","TaxID","Phone","ZipCode"];
+  return Array.from({length:50},(_,i)=>({id:`ERR-${1001+i}`,type:types[Math.floor(sr()*types.length)],status:statuses[Math.floor(sr()*statuses.length)],assignee:assignees[Math.floor(sr()*assignees.length)],source:sources[Math.floor(sr()*sources.length)],field:fields[Math.floor(sr()*fields.length)],created:`2025-0${Math.floor(sr()*3+1)}-${String(Math.floor(sr()*28+1)).padStart(2,"0")}`}));
+})();
+
+const MAP_DATA=(()=>{
+  const statuses=["Approved","Pending","In Review","Flagged"];
+  const transforms=["Direct Copy","Lookup Table","Concatenate","Split","Default Value","Formula"];
+  const srcs=["LEGACY_CUST","LEGACY_ITEM","LEGACY_VENDOR","LEGACY_GL"];
+  const tgts=["WD_WORKER","WD_COST_CENTER","WD_SUPPLIER","WD_LEDGER"];
+  return Array.from({length:30},(_,i)=>({id:`MAP-${201+i}`,src:srcs[Math.floor(sr2()*srcs.length)],srcField:`SRC_FIELD_${String(i+1).padStart(2,"0")}`,tgt:tgts[Math.floor(sr2()*tgts.length)],tgtField:`TGT_FIELD_${String(i+1).padStart(2,"0")}`,transform:transforms[Math.floor(sr2()*transforms.length)],status:statuses[Math.floor(sr2()*statuses.length)]}));
+})();
+
+const VAL_DATA=(()=>{
+  const vstats=["Validated","Pending","Issue Found","Changed"];
+  const entities=["Employee","Cost Center","Supplier","GL"];
+  return Array.from({length:40},(_,i)=>{const st=vstats[Math.floor(sr3()*vstats.length)];return{id:`REC-${3001+i}`,entity:entities[Math.floor(sr3()*entities.length)],fieldA:`Value_${Math.floor(sr3()*900+100)}`,fieldB:`Value_${Math.floor(sr3()*900+100)}`,status:st};});
+})();
+
+const TREND_DATA=(()=>{
+  const dates=Array.from({length:14},(_,i)=>{const d=new Date();d.setDate(d.getDate()-13+i);return d.toLocaleDateString("en",{month:"short",day:"numeric"})});
+  return dates.map(d=>({date:d,open:Math.floor(sr4()*40+20),resolved:Math.floor(sr4()*25+5),inprogress:Math.floor(sr4()*17+8)}));
+})();
+
+const JOBS=[
+  {name:"Customer Data Extract",status:"Completed",progress:100,duration:"4m 12s",started:"Today 09:14",log:["[09:14:01] Job started","[09:14:05] Connected to PostgreSQL","[09:16:20] Extracted 12,847 records","[09:18:13] Validation complete","[09:18:13] Job completed successfully"]},
+  {name:"Vendor Cross-Reference Load",status:"Running",progress:63,duration:"1m 44s",started:"Today 10:32",log:["[10:32:00] Job started","[10:32:08] Loading cross-reference table","[10:33:44] 4,201 / 6,650 records processed..."]},
+  {name:"GL Account Validation",status:"Failed",progress:41,duration:"0m 58s",started:"Today 08:55",log:["[08:55:00] Job started","[08:55:21] Connected to staging DB","[08:55:58] ERROR: Null value in required field 'CostCenter' at row 1,842","[08:55:58] Job failed"]},
+  {name:"Address Standardization Pre-Process",status:"Queued",progress:0,duration:"—",started:"Scheduled 11:00",log:["[Queued] Waiting for execution slot"]},
+  {name:"Employee Master Snapshot",status:"Completed",progress:100,duration:"2m 03s",started:"Yesterday 17:30",log:["[17:30:00] Job started","[17:31:44] Snapshot created — 8,203 records","[17:32:03] Stored to PostgreSQL","[17:32:03] Job completed"]}
+];
+
+const APPS={"Data Migration":[{name:"Applaud",desc:"Extract, Transform, and Load",icon:"⚙️",type:"desktop"},{name:"Conversion Dashboard",desc:"Conversion Post-Processing",icon:"📊",type:"web"},{name:"CodeForge",desc:"Generate Conversion Code",icon:"💻",type:"desktop"},{name:"MapMaestro",desc:"Create Requirements Documents",icon:"🗺️",type:"desktop"},{name:"Load Templates",desc:"File Load Information",icon:"📁",type:"file"},{name:"SQL",desc:"Query Client Data",icon:"🗄️",type:"desktop"},{name:"Migration Tracker (Smartsheet)",desc:"Project Tracking Spreadsheet",icon:"📋",type:"web"}],"Data Engineering":[{name:"VS Code",desc:"Code editor for pipeline development",icon:"💻",type:"desktop"},{name:"dbt Cloud",desc:"Data transformation platform",icon:"🌐",type:"web"},{name:"Snowflake Console",desc:"Cloud data warehouse access",icon:"❄️",type:"web"},{name:"Pipeline Architecture Template",desc:"Standard pipeline design doc",icon:"📄",type:"file"}],"Data Governance":[{name:"Collibra",desc:"Data catalog & governance platform",icon:"📋",type:"web"},{name:"Data Dictionary Template",desc:"Standard field documentation",icon:"📁",type:"file"},{name:"Policy Review Checklist",desc:"Governance review framework",icon:"✅",type:"file"}],"Delivery Toolkit":[{name:"Definian Portal",desc:"Open Client Portal in browser",icon:"🌐",type:"web"},{name:"TalentLMS Training",desc:"Internal learning platform",icon:"🎓",type:"web"},{name:"Knowledge Base",desc:"Internal content library",icon:"📚",type:"web"},{name:"Project Status Template",desc:"Weekly status report template",icon:"📊",type:"file"}]};
+
+function badge(s){const m={Open:"b-open",Failed:"b-open","In Progress":"b-warn",Pending:"b-warn",Queued:"b-warn",Running:"b-info",Resolved:"b-ok",Completed:"b-ok",Approved:"b-ok",Validated:"b-ok","In Review":"b-info",Flagged:"b-open","Issue Found":"b-open",Changed:"b-warn","Pending Review":"b-warn"};return`<span class="badge ${m[s]||'b-info'}">${s}</span>`}
+function dots(){return`<div class="dots">${Array(6).fill('<div class="dot"></div>').join('')}</div>`}
+function sT(t){return`<div class="section-title">${t}</div>`}
+function bBar(sub){return`<div class="brand-bar"><div class="brand-title">${sub}</div></div>`}
+
+function lineChart(data,keys,colors){
+  const W=600,H=200,pad={l:36,r:10,t:8,b:28},w=W-pad.l-pad.r,h=H-pad.t-pad.b;
+  const maxV=Math.max(...data.flatMap(d=>keys.map(k=>d[k])))*1.1;
+  const xs=w/(data.length-1),ys=v=>h-(v/maxV)*h;
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:${H}px"><g transform="translate(${pad.l},${pad.t})">`;
+  [0,.5,1].forEach(p=>{const y=h*p;s+=`<line x1="0" y1="${y}" x2="${w}" y2="${y}" stroke="#2a3654" stroke-width="1"/>`;s+=`<text x="-4" y="${y+4}" fill="#6b7280" font-size="10" text-anchor="end">${Math.round(maxV*(1-p))}</text>`});
+  data.forEach((d,i)=>{if(i%3===0||i===data.length-1)s+=`<text x="${i*xs}" y="${h+18}" fill="#6b7280" font-size="10" text-anchor="middle">${d.date}</text>`});
+  keys.forEach((k,ki)=>{
+    const pts=data.map((d,i)=>`${i*xs},${ys(d[k])}`).join(" ");
+    if(ki===0){const area=`0,${h} `+data.map((d,i)=>`${i*xs},${ys(d[k])}`).join(" ")+` ${(data.length-1)*xs},${h}`;s+=`<polygon points="${area}" fill="${colors[ki]}" opacity="0.25"/>`}
+    s+=`<polyline points="${pts}" fill="none" stroke="${colors[ki]}" stroke-width="2"/>`;
+  });
+  s+=`</g>`;
+  keys.forEach((k,i)=>{s+=`<circle cx="${pad.l+i*110+8}" cy="${H-4}" r="4" fill="${colors[i]}"/>`;s+=`<text x="${pad.l+i*110+16}" y="${H}" fill="#9aa3b8" font-size="10">${k}</text>`});
+  return s+`</svg>`;
+}
+
+function donutChart(vals,labels,colors,size=130){
+  const total=vals.reduce((a,b)=>a+b,0);
+  let start=-Math.PI/2,cx=size/2,cy=size/2,r=size*.38,inner=size*.24;
+  let s=`<svg viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" style="width:${size}px;height:${size}px">`;
+  vals.forEach((v,i)=>{
+    const sw=(v/total)*2*Math.PI,end=start+sw;
+    const x1=cx+r*Math.cos(start),y1=cy+r*Math.sin(start),x2=cx+r*Math.cos(end),y2=cy+r*Math.sin(end);
+    const ix1=cx+inner*Math.cos(start),iy1=cy+inner*Math.sin(start),ix2=cx+inner*Math.cos(end),iy2=cy+inner*Math.sin(end);
+    const lg=sw>Math.PI?1:0;
+    s+=`<path d="M${ix1},${iy1} L${x1},${y1} A${r},${r} 0 ${lg},1 ${x2},${y2} L${ix2},${iy2} A${inner},${inner} 0 ${lg},0 ${ix1},${iy1}" fill="${colors[i]}"/>`;
+    start=end;
+  });
+  s+=`<text x="${cx}" y="${cy+5}" fill="#e8eaf0" font-size="15" text-anchor="middle" font-weight="700" font-family="'Titillium Web',sans-serif">${total}</text></svg>`;
+  return`<div style="display:flex;align-items:center;gap:14px">${s}<div style="font-size:11px">${vals.map((v,i)=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><div style="width:8px;height:8px;border-radius:2px;background:${colors[i]}"></div><span style="color:#9aa3b8">${labels[i]}</span><span style="color:#e8eaf0;margin-left:auto;padding-left:10px;font-weight:600">${v}</span></div>`).join('')}</div></div>`;
+}
+
+function renderLogin(){
+  return`<div class="login-wrap"><div class="login-card">
+    <div class="login-logo">definian<span>.</span></div>
+    <div class="login-sub">Data Platform v1.0 — Sign In</div>
+    <div class="form-group"><label class="form-label">Email</label><input class="input" id="li-email" type="email" value="client@acme.com"/></div>
+    <div class="form-group"><label class="form-label">Password</label><input class="input" id="li-pw" type="password" value="client123"/></div>
+    <div id="li-err" class="error-msg"></div>
+    <button class="btn" style="width:100%;margin-top:8px" onclick="doLogin()">Sign In</button>
+    <div style="margin-top:18px;font-size:11px;color:#6b7280;line-height:1.8">
+      <strong style="color:#9aa3b8">Demo accounts:</strong><br>
+      admin@definian.com / admin123<br>
+      consultant@definian.com / consult1<br>
+      client@acme.com / client123<br>
+      viewer@acme.com / viewer123
+    </div>
+  </div></div>`;
+}
+
+function renderApp(){
+  const isPortal=state.ui==="Client Portal";
+  const pages=isPortal
+    ?["Home","Status","Data Mapping","Error Management","Data Validation","Compare & Reconcile","Deduplication",...(state.user.role==="Administrator"?["User Management"]:[]) ]
+    :["App Launcher","Job Execution & Monitoring",...(state.user.role==="Administrator"?["Console Admin"]:[])];
+
+  let pageContent="";
+  if(isPortal){
+    if(state.page==="Home") pageContent=renderHome();
+    else if(state.page==="Status") pageContent=renderStatus();
+    else if(state.page==="Error Management") pageContent=renderErrors();
+    else if(state.page==="Data Mapping") pageContent=renderMapping();
+    else if(state.page==="Data Validation") pageContent=renderValidation();
+    else if(state.page==="Compare & Reconcile") pageContent=renderCompare();
+    else if(state.page==="Deduplication") pageContent=renderDedup();
+    else if(state.page==="User Management") pageContent=renderUsers();
+    else pageContent=`<div class="page">${bBar(state.page)}<p style="color:#9aa3b8">Coming soon.</p></div>`;
+  } else {
+    if(state.page==="App Launcher") pageContent=renderAppLauncher();
+    else if(state.page==="Job Execution & Monitoring") pageContent=renderJobs();
+    else if(state.page==="Console Admin") pageContent=renderConsoleAdmin();
+    else pageContent=`<div class="page">${bBar(state.page)}<p style="color:#9aa3b8">Coming soon.</p></div>`;
+  }
+
+  const modal=state.logModal!==null?`<div class="log-modal" onclick="closeLog(event)"><div class="log-box" id="log-box">
+    <div style="font-family:'Titillium Web',sans-serif;font-weight:600;font-size:14px;color:#e8eaf0;margin-bottom:12px;border-bottom:1px solid #2a3654;padding-bottom:8px">${JOBS[state.logModal].name} — Log</div>
+    ${JOBS[state.logModal].log.map(l=>`<div class="log-line ${l.includes('ERROR')?'err':l.includes('completed')||l.includes('success')?'ok':''}">${l}</div>`).join('')}
+    <button class="btn" style="margin-top:16px;width:100%" onclick="state.logModal=null;render()">Close</button>
+  </div></div>`:'';
+
+  return`<div id="app">
+    <div id="sidebar">
+      <div style="padding:14px 14px 4px">
+        <div class="ui-toggle">
+          <button class="ui-btn ${isPortal?'active':'inactive'}" onclick="switchUI('Client Portal')">Portal</button>
+          <button class="ui-btn ${!isPortal?'active':'inactive'}" onclick="switchUI('Execution Console')">Console</button>
+        </div>
+      </div>
+      <div class="sb-section">${state.ui}</div>
+      ${pages.map(p=>`<button class="nav-btn ${state.page===p?'active':''}" onclick="nav('${p}')">${p}</button>`).join('')}
+      <hr class="sb-divider">
+      <div class="sb-user">
+        <strong>${state.user.name}</strong>
+        <div style="color:#9aa3b8;font-size:11px">${state.user.email}</div>
+        <div class="sb-role">${state.user.role}</div>
+      </div>
+      <div style="padding:0 14px 14px">
+        <button class="btn-outline" style="width:100%;font-size:11px;padding:6px" onclick="doSignout()">Sign Out</button>
+      </div>
+    </div>
+    <div id="main">
+      <div class="topbar">
+        <div class="logo">definian<span>.</span></div>
+        <div class="topbar-sub">${state.page}</div>
+        <div class="topbar-user"><span>${state.user.name}</span><span class="role-badge">${state.user.role}</span></div>
+      </div>
+      ${pageContent}
+    </div>
+  </div>${modal}`;
+}
+
+function renderHome(){
+  const errStatuses=["Open","In Progress","Resolved","Pending Review"];
+  const errCounts=errStatuses.map(s=>ERROR_DATA.filter(e=>e.status===s).length);
+  const trend=lineChart(TREND_DATA,["open","resolved","inprogress"],["#0D2C71","#00AB63","#038FBA"]);
+  const donut=donutChart(errCounts,errStatuses,["#FF6B6B","#038FBA","#00AB63","#FFD166"]);
+  return`<div class="page">
+    ${bBar("Client Portal — Home")}${dots()}
+    ${sT("ENGAGEMENT OVERVIEW")}
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-alert"><div class="kpi-label">Active Errors</div><div class="kpi-value">34</div><div class="kpi-delta">▲ 3 since yesterday</div></div>
+      <div class="kpi-card kpi-warn"><div class="kpi-label">Pending Duplicates</div><div class="kpi-value">128</div><div class="kpi-delta">Phase 2 module</div></div>
+      <div class="kpi-card kpi-warn"><div class="kpi-label">Extracts Pending Validation</div><div class="kpi-value">7</div><div class="kpi-delta">▼ 2 this week</div></div>
+      <div class="kpi-card kpi-ok"><div class="kpi-label">Pending Mappings</div><div class="kpi-value">12</div><div class="kpi-delta">▼ 5 since last week</div></div>
+    </div>
+    <div class="two-col">
+      <div>
+        ${sT("ERROR TRENDS — LAST 14 DAYS")}<div class="chart-wrap">${trend}</div>
+        ${sT("ERROR BREAKDOWN")}<div class="chart-wrap">${donut}</div>
+      </div>
+      <div>
+        ${sT("RECENT ACTIVITY")}
+        ${[["Casey Client","Resolved error ERR-1023","Error Management","2 hours ago"],["Chris Consultant","Updated mapping MAP-214","Data Mapping","3 hours ago"],["Alex Admin","Added user viewer@acme.com","User Management","Yesterday"],["Casey Client","Validated 24 records","Data Validation","Yesterday"],["Chris Consultant","Ran Customer Extract job","Job Execution","2 days ago"]].map(([n,a,m,w])=>`<div class="activity-item"><div class="activity-meta">${w} · ${m}</div><div><strong>${n}</strong> ${a}</div></div>`).join('')}
+        <br>${sT("MY TASKS")}
+        ${[["Review 6 error records assigned to you","Due Today","#FF6B6B"],["Validate Vendor extract (3 pending records)","Due Tomorrow","#FFD166"],["Confirm mapping MAP-217 (Cost Center split)","Due This Week","#9aa3b8"]].map(([t,d,c])=>`<div class="task-item"><div style="font-size:11px;color:${c};margin-bottom:2px">${d}</div><div>${t}</div></div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderStatus(){
+  const phases=[{name:"Discovery & Requirements",pct:100,status:"Completed"},{name:"Data Mapping",pct:78,status:"In Progress"},{name:"Data Extraction",pct:65,status:"In Progress"},{name:"Transformation & Validation",pct:40,status:"In Progress"},{name:"UAT & Load Testing",pct:10,status:"Pending"},{name:"Cutover & Go-Live",pct:0,status:"Pending"}];
+  return`<div class="page">
+    ${bBar("Client Portal — Migration Status")}${dots()}
+    ${sT("OVERALL PROGRESS")}
+    <div class="chart-wrap" style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+        <div style="font-size:36px;font-weight:700;font-family:'Titillium Web',sans-serif;color:#00AB63">49%</div>
+        <div style="flex:1"><div style="height:8px;background:#2a3654;border-radius:4px;overflow:hidden"><div style="width:49%;height:100%;background:#00AB63;border-radius:4px"></div></div><div style="font-size:11px;color:#9aa3b8;margin-top:4px">Overall migration completion</div></div>
+      </div>
+      ${phases.map(p=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px">${p.name}</span><span style="font-size:11px;color:#9aa3b8">${p.pct}% &nbsp;${badge(p.status)}</span></div><div style="height:5px;background:#2a3654;border-radius:3px;overflow:hidden"><div style="width:${p.pct}%;height:100%;background:${p.pct===100?'#00AB63':p.pct>0?'#038FBA':'#2a3654'};border-radius:3px"></div></div></div>`).join('')}
+    </div>
+    ${sT("KEY MILESTONES")}
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Milestone</th><th>Target Date</th><th>Status</th><th>Owner</th></tr></thead><tbody>
+      ${[["Requirements Sign-Off","2025-01-15","Completed","Alex Admin"],["Mapping Document Approved","2025-02-28","Completed","Chris Consultant"],["Extract Validation Complete","2025-03-30","In Progress","Casey Client"],["UAT Begin","2025-04-15","Pending","Chris Consultant"],["Go-Live","2025-05-01","Pending","Alex Admin"]].map(([m,d,s,o])=>`<tr><td>${m}</td><td>${d}</td><td>${badge(s)}</td><td>${o}</td></tr>`).join('')}
+    </tbody></table></div>
+  </div>`;
+}
+
+function renderErrors(){
+  let data=ERROR_DATA;
+  if(state.errorFilter!=="All") data=data.filter(e=>e.status===state.errorFilter);
+  if(state.errSearch) data=data.filter(e=>e.id.toLowerCase().includes(state.errSearch.toLowerCase())||e.type.toLowerCase().includes(state.errSearch.toLowerCase())||e.assignee.toLowerCase().includes(state.errSearch.toLowerCase()));
+  const counts={All:ERROR_DATA.length,...Object.fromEntries(["Open","In Progress","Resolved","Pending Review"].map(s=>[s,ERROR_DATA.filter(e=>e.status===s).length]))};
+  return`<div class="page">
+    ${bBar("Client Portal — Error Management")}${dots()}
+    <div class="kpi-grid" style="grid-template-columns:repeat(5,1fr)">
+      ${Object.entries(counts).map(([s,c])=>`<div class="kpi-card ${s==='Open'?'kpi-alert':s==='Resolved'?'kpi-ok':s==='All'?'':'kpi-warn'}" style="cursor:pointer;${state.errorFilter===s?'border-color:#00AB63':''}" onclick="filterErrors('${s}')"><div class="kpi-label">${s}</div><div class="kpi-value">${c}</div></div>`).join('')}
+    </div>
+    <div class="filters">
+      <input class="input" style="width:240px" placeholder="Search by ID, type, assignee..." value="${state.errSearch}" oninput="searchErrors(this.value)"/>
+      <select class="select" onchange="filterErrors(this.value)">${["All","Open","In Progress","Resolved","Pending Review"].map(s=>`<option ${state.errorFilter===s?'selected':''}>${s}</option>`).join('')}</select>
+      <span style="color:#9aa3b8;font-size:12px">${data.length} records</span>
+    </div>
+    ${sT("ERROR RECORDS")}
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Type</th><th>Status</th><th>Assignee</th><th>Source</th><th>Field</th><th>Created</th></tr></thead><tbody>
+      ${data.slice(0,15).map(e=>`<tr><td style="font-family:monospace;color:#038FBA">${e.id}</td><td>${e.type}</td><td>${badge(e.status)}</td><td>${e.assignee}</td><td>${e.source}</td><td><code style="background:#151c2e;color:#9aa3b8;padding:1px 5px;border-radius:3px">${e.field}</code></td><td>${e.created}</td></tr>`).join('')}
+    </tbody></table></div>
+    ${data.length>15?`<div style="color:#9aa3b8;font-size:12px;text-align:center;padding:8px">Showing 15 of ${data.length}</div>`:''}
+  </div>`;
+}
+
+function renderMapping(){
+  let data=MAP_DATA;
+  if(state.mapFilter!=="All") data=data.filter(m=>m.status===state.mapFilter);
+  const counts={All:MAP_DATA.length,...Object.fromEntries(["Approved","Pending","In Review","Flagged"].map(s=>[s,MAP_DATA.filter(m=>m.status===s).length]))};
+  return`<div class="page">
+    ${bBar("Client Portal — Data Mapping")}${dots()}
+    <div class="kpi-grid" style="grid-template-columns:repeat(5,1fr)">
+      ${Object.entries(counts).map(([s,c])=>`<div class="kpi-card ${s==='Approved'?'kpi-ok':s==='Flagged'?'kpi-alert':s==='All'?'':'kpi-warn'}" style="cursor:pointer;${state.mapFilter===s?'border-color:#00AB63':''}" onclick="filterMaps('${s}')"><div class="kpi-label">${s}</div><div class="kpi-value">${c}</div></div>`).join('')}
+    </div>
+    <div class="filters">
+      <select class="select" onchange="filterMaps(this.value)">${["All","Approved","Pending","In Review","Flagged"].map(s=>`<option ${state.mapFilter===s?'selected':''}>${s}</option>`).join('')}</select>
+      <span style="color:#9aa3b8;font-size:12px">${data.length} mappings</span>
+    </div>
+    ${sT("MAPPING SPECIFICATIONS")}
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Map ID</th><th>Source Table</th><th>Source Field</th><th>Target Object</th><th>Target Field</th><th>Transform</th><th>Status</th></tr></thead><tbody>
+      ${data.slice(0,15).map(m=>`<tr><td style="color:#038FBA">${m.id}</td><td><code style="background:#151c2e;color:#9aa3b8;padding:1px 5px;border-radius:3px;font-size:11px">${m.src}</code></td><td style="font-size:11px">${m.srcField}</td><td><code style="background:#151c2e;color:#9aa3b8;padding:1px 5px;border-radius:3px;font-size:11px">${m.tgt}</code></td><td style="font-size:11px">${m.tgtField}</td><td>${m.transform}</td><td>${badge(m.status)}</td></tr>`).join('')}
+    </tbody></table></div>
+  </div>`;
+}
+
+function renderValidation(){
+  const counts={Validated:VAL_DATA.filter(v=>v.status==="Validated").length,Pending:VAL_DATA.filter(v=>v.status==="Pending").length,"Issue Found":VAL_DATA.filter(v=>v.status==="Issue Found").length,Changed:VAL_DATA.filter(v=>v.status==="Changed").length};
+  return`<div class="page">
+    ${bBar("Client Portal — Data Validation")}${dots()}
+    <div class="kpi-grid">
+      ${Object.entries(counts).map(([s,c])=>`<div class="kpi-card ${s==='Validated'?'kpi-ok':s==='Issue Found'?'kpi-alert':'kpi-warn'}"><div class="kpi-label">${s}</div><div class="kpi-value">${c}</div></div>`).join('')}
+    </div>
+    ${sT("VALIDATION RECORDS")}
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Record ID</th><th>Entity</th><th>Field A (Current)</th><th>Field A (Gold Copy)</th><th>Status</th></tr></thead><tbody>
+      ${VAL_DATA.slice(0,15).map(v=>`<tr><td style="color:#038FBA">${v.id}</td><td>${v.entity}</td><td><code style="background:#151c2e;color:#9aa3b8;padding:1px 5px;border-radius:3px;font-size:11px">${v.fieldA}</code></td><td><code style="background:#151c2e;color:#9aa3b8;padding:1px 5px;border-radius:3px;font-size:11px">${v.fieldB}</code></td><td>${badge(v.status)}</td></tr>`).join('')}
+    </tbody></table></div>
+  </div>`;
+}
+
+function renderCompare(){
+  const rows=[{id:"REC-3001",entity:"Employee",current:"Value_842",gold:"Value_842",match:true},{id:"REC-3002",entity:"Cost Center",current:"Value_301",gold:"Value_455",match:false},{id:"REC-3003",entity:"Supplier",current:"Value_719",gold:"Value_719",match:true},{id:"REC-3004",entity:"GL",current:"Value_200",gold:"Value_201",match:false},{id:"REC-3005",entity:"Employee",current:"Value_512",gold:"Value_512",match:true}];
+  return`<div class="page">
+    ${bBar("Client Portal — Compare & Reconcile")}${dots()}
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-ok"><div class="kpi-label">Matched Records</div><div class="kpi-value">27</div><div class="kpi-delta">68% of total</div></div>
+      <div class="kpi-card kpi-alert"><div class="kpi-label">Mismatched Records</div><div class="kpi-value">8</div></div>
+      <div class="kpi-card kpi-warn"><div class="kpi-label">New Records</div><div class="kpi-value">4</div></div>
+      <div class="kpi-card kpi-warn"><div class="kpi-label">Pending Review</div><div class="kpi-value">1</div></div>
+    </div>
+    ${sT("COMPARISON RESULTS")}
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Record ID</th><th>Entity</th><th>Current Value</th><th>Gold Copy Value</th><th>Match</th></tr></thead><tbody>
+      ${rows.map(r=>`<tr><td style="color:#038FBA">${r.id}</td><td>${r.entity}</td><td><code style="background:#151c2e;color:#9aa3b8;padding:1px 5px;border-radius:3px">${r.current}</code></td><td><code style="background:#151c2e;color:${r.match?'#9aa3b8':'#FF6B6B'};padding:1px 5px;border-radius:3px">${r.gold}</code></td><td>${r.match?'<span style="color:#00AB63">✓ Match</span>':'<span style="color:#FF6B6B">✗ Mismatch</span>'}</td></tr>`).join('')}
+    </tbody></table></div>
+  </div>`;
+}
+
+function renderDedup(){
+  const groups=[[{id:"REC-3011",name:"Acme Corp",city:"Chicago",phone:"312-555-0101"},{id:"REC-3022",name:"ACME Corporation",city:"Chicago",phone:"312-555-0101"}],[{id:"REC-3031",name:"John Smith",email:"jsmith@co.com"},{id:"REC-3041",name:"Jon Smith",email:"jsmith@co.com"},{id:"REC-3051",name:"John Smyth",email:"j.smith@co.com"}]];
+  return`<div class="page">
+    ${bBar("Client Portal — Deduplication")}${dots()}
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-warn"><div class="kpi-label">Duplicate Groups</div><div class="kpi-value">2</div></div>
+      <div class="kpi-card kpi-warn"><div class="kpi-label">Records Affected</div><div class="kpi-value">5</div></div>
+      <div class="kpi-card kpi-ok"><div class="kpi-label">Reviewed</div><div class="kpi-value">0 / 2</div></div>
+      <div class="kpi-card"><div class="kpi-label">Similarity Threshold</div><div class="kpi-value">75%</div></div>
+    </div>
+    ${sT("DUPLICATE GROUPS")}
+    ${groups.map((g,gi)=>`<div style="background:#0f1525;border:1px solid #2a3654;border-radius:8px;padding:16px;margin-bottom:12px">
+      <div style="font-size:12px;font-weight:600;font-family:'Titillium Web',sans-serif;margin-bottom:10px">Group ${gi+1} — ${g.length} records <span style="color:#FFD166;font-weight:400;font-size:11px">· Pending review</span></div>
+      <div class="table-wrap" style="margin-bottom:10px"><table class="data-table"><thead><tr>${Object.keys(g[0]).map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>${g.map(r=>`<tr>${Object.values(r).map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm" onclick="alert('Group ${gi+1} approved.')">Approve Duplicates</button>
+        <button class="btn-outline" style="padding:4px 10px;font-size:11px" onclick="alert('Group ${gi+1} rejected.')">Reject</button>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderUsers(){
+  return`<div class="page">
+    ${bBar("Client Portal — User Management")}${dots()}
+    ${sT("PLATFORM USERS")}
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody>
+      ${Object.entries(USERS).map(([email,u])=>`<tr><td>${u.name}</td><td style="color:#038FBA">${email}</td><td>${u.role}</td><td><button class="btn btn-sm" onclick="alert('Edit: ${u.name}')">Edit</button></td></tr>`).join('')}
+    </tbody></table></div>
+    <button class="btn" style="margin-top:12px" onclick="alert('Invite user dialog')">+ Invite User</button>
+  </div>`;
+}
+
+function renderAppLauncher(){
+  return`<div class="page">
+    ${bBar("Execution Console — App Launcher")}${dots()}
+    ${Object.entries(APPS).map(([cat,apps])=>`${sT(cat.toUpperCase())}<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:20px">${apps.map(a=>`<div class="app-card" onclick="alert('Opening: ${a.name}')"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><span style="font-size:16px">${a.icon}</span><div class="app-card-name">${a.name}</div></div><div class="app-card-desc">${a.desc}</div><div style="margin-top:6px"><span class="badge b-info">${a.type}</span></div></div>`).join('')}</div>`).join('')}
+  </div>`;
+}
+
+function renderJobs(){
+  return`<div class="page">
+    ${bBar("Execution Console — Job Execution & Monitoring")}${dots()}
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-ok"><div class="kpi-label">Completed</div><div class="kpi-value">${JOBS.filter(j=>j.status==="Completed").length}</div></div>
+      <div class="kpi-card kpi-alert"><div class="kpi-label">Failed</div><div class="kpi-value">${JOBS.filter(j=>j.status==="Failed").length}</div></div>
+      <div class="kpi-card kpi-warn"><div class="kpi-label">Running</div><div class="kpi-value">${JOBS.filter(j=>j.status==="Running").length}</div></div>
+      <div class="kpi-card kpi-warn"><div class="kpi-label">Queued</div><div class="kpi-value">${JOBS.filter(j=>j.status==="Queued").length}</div></div>
+    </div>
+    ${sT("JOB QUEUE")}
+    ${JOBS.map((j,i)=>{const cls=j.status==="Running"?"running":j.status==="Failed"?"failed":j.status==="Queued"?"queued":"";const pf=j.status==="Running"?"run":j.status==="Failed"?"fail":j.status==="Queued"?"q":"";return`<div class="job-row ${cls}"><div style="flex:1"><div class="job-name">${j.name}</div><div class="job-meta">Started: ${j.started} · Duration: ${j.duration}</div><div class="progress-bar"><div class="progress-fill ${pf}" style="width:${j.progress}%"></div></div></div><div style="text-align:right;min-width:90px">${badge(j.status)}<br><span style="font-size:12px;color:#9aa3b8;margin-top:4px;display:block">${j.progress}%</span></div><button class="btn-outline" style="font-size:11px;padding:4px 10px" onclick="showLog(${i})">View Log</button></div>`;}).join('')}
+  </div>`;
+}
+
+function renderConsoleAdmin(){
+  return`<div class="page">
+    ${bBar("Execution Console — Console Admin")}${dots()}
+    ${sT("SYSTEM STATUS")}
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-ok"><div class="kpi-label">DB Connection</div><div class="kpi-value" style="font-size:18px">Connected</div></div>
+      <div class="kpi-card kpi-ok"><div class="kpi-label">Job Scheduler</div><div class="kpi-value" style="font-size:18px">Running</div></div>
+      <div class="kpi-card kpi-warn"><div class="kpi-label">Storage Used</div><div class="kpi-value">73%</div></div>
+      <div class="kpi-card kpi-ok"><div class="kpi-label">API Health</div><div class="kpi-value" style="font-size:18px">OK</div></div>
+    </div>
+    ${sT("CONFIGURATION")}
+    <div style="background:#0f1525;border:1px solid #2a3654;border-radius:8px;padding:16px;font-size:12px">
+      ${[["Environment","Production"],["Database","PostgreSQL 15.2"],["Job Concurrency","4 workers"],["Max File Size","500 MB"],["Session Timeout","8 hours"],["Log Retention","90 days"]].map(([k,v])=>`<div style="display:flex;padding:7px 0;border-bottom:1px solid #2a3654"><span style="color:#9aa3b8;width:180px">${k}</span><span>${v}</span></div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function showLog(i){state.logModal=i;render()}
+function closeLog(e){if(e.target.classList.contains('log-modal')){state.logModal=null;render()}}
+function nav(p){state.page=p;render()}
+function switchUI(ui){state.ui=ui;state.page=ui==="Client Portal"?"Home":"App Launcher";render()}
+function doSignout(){state.auth=false;state.user=null;render()}
+function doLogin(){const e=document.getElementById('li-email').value.trim(),p=document.getElementById('li-pw').value,u=USERS[e];if(u&&u.password===p){state.auth=true;state.user={...u,email:e};render()}else{document.getElementById('li-err').textContent='Invalid email or password.'}}
+function filterErrors(s){state.errorFilter=s;render()}
+function searchErrors(v){state.errSearch=v;render()}
+function filterMaps(s){state.mapFilter=s;render()}
+function render(){document.getElementById('root').innerHTML=state.auth?renderApp():renderLogin()}
+render();
+</script>
+</body>
+</html>
